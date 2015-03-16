@@ -10,4 +10,4 @@ a seperate DOM update from adding the new message text
 
 ## Composes dehydrated states ##
 
-Add `hydrate()` and `dehydrate()` functions to your stores, and state will compose JSON blobs which can be used to rehydrate your app back to a previous state. Very usefull for integration testing and server-side rendering.
+Add `hydrate()` and `dehydrate()` methods to your stores, and state will compose JSON blobs which can be used to rehydrate your app back to a previous state. Very usefull for integration testing and server-side rendering.
