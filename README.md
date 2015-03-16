@@ -1,5 +1,5 @@
 # state
-Tying the loop of flux. Using a two way dispatcher that batches store change events for performance and simplicity
+Tying the loop of flux. Using a two way dispatcher that batches store change events for performance and simplicity. Heavily influenced by Yahoo's Dispatchr.
 
 
 ## Batches change events by dispatch loops ##
