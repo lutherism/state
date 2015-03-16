@@ -1,7 +1,7 @@
-var BaseStore = require('./baseStore'),
+var State = require('../../state'),
   util = require('util');
 
-var ThreadStore = BaseStore.createClass({
+var ThreadStore = State.createStore({
   storeName: "ThreadStore",
   handlers: {
     'SERVER': "handleServerPayload",
@@ -31,7 +31,11 @@ var ThreadStore = BaseStore.createClass({
     }
   },
   handleNewMessage: function(data) {
-    if (!util.isArray(this.threads[data.thread])) {
+    if (!data.id) {
+      dispatcher.waitFor([dispatcher.stores.MessageStore]);
+      data.id = dispatcher.stores.MessageStore.newestId;
+    }
+    if (!this.threads[data.thread]) {
       this.threads[data.thread] = {};
       this.threads[data.thread][data.id] = true;
     } else if (!this.threads[data.thread][data.id]){

@@ -1,6 +1,6 @@
-var BaseStore = require('./baseStore');
+var State = require('../../state');
 
-var MessageStore = BaseStore.createClass({
+var MessageStore = State.createStore({
   storeName: "MessageStore",
   handlers: {
     'SERVER': "handleServerPayload",
@@ -38,6 +38,10 @@ var MessageStore = BaseStore.createClass({
     }
   },
   changeMessage: function(data) {
+    if (!data.id) {
+      data.id = Math.floor(Math.random() * 10000);
+      this.newestId = data.id;
+    }
     this.messages[data.id] = data;
     this.emitChange();
   },

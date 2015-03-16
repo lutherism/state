@@ -1,6 +1,6 @@
-var BaseStore = require('./baseStore');
+var State = require('../../state');
 
-var UnreadMessagesStore = BaseStore.createClass({
+var UnreadMessagesStore = State.createStore({
   storeName: "UnreadMessagesStore",
   handlers: {
     'SERVER': "handleServerPayload",
@@ -37,17 +37,19 @@ var UnreadMessagesStore = BaseStore.createClass({
     }
   },
   handleNewMessage: function(data) {
-    this.unreads[data.id] = true;
-    this.emitChange();
+    if (data.id) {
+      this.unreads[data.id] = true;
+      this.emitChange();
+    }
   },
   dehydrate: function() {
     return {
-      messages: this.messages
+      unreads: this.unreads
     };
   },
   hydrate: function(state) {
-    if (state.messages) {
-      this.messages = state.messages;
+    if (state.unreads) {
+      this.unreads = state.unreads;
       this.emitChange();
     }
   }

@@ -1,7 +1,11 @@
+var events = require('events'),
+  util = require('util');
+
 function State() {
     this.stores = {};
     this.dispatching = false;
     this.listeners = [];
+    this.run = {};
     this.changedBuffer = {};
 }
 
@@ -12,22 +16,19 @@ State.prototype.register = function register(StoreClass) {
 
   var store = new StoreClass({
     dispatcher: this
-  })
+  });
 
-  this.stores[store.storeName] = {
-    listeners: [],
-    instance: store
-  };
+  this.stores[store.storeName] = store;
 
   store.on('change:emit', function() {
-    this.enQueueChange(store);
+    this.bufferChange(store);
     console.log("change event");
   }.bind(this));
 
   return this;
 }
 
-State.prototype.enQueueChange = function (store) {
+State.prototype.bufferChange = function (store) {
   if (!this.dispatching) {
     throw store.storeName + " emitted a change outside of a dispatch loop";
   }
@@ -36,8 +37,16 @@ State.prototype.enQueueChange = function (store) {
 
 State.prototype.listenToStores = function (stores, callback, ctx) {
   var args = Array.prototype.slice.call(arguments, 3);
+
+  var storeNames = stores.map(function(store) {
+    if (!this.stores[store.storeName]) {
+      this.register(store);
+    }
+    return store.storeName;
+  }.bind(this));
+
   return "_" + this.listeners.push({
-    stores: stores,
+    stores: storeNames,
     callback: callback,
     ctx: ctx
   });
@@ -64,28 +73,40 @@ State.prototype.hydrate = function(state) {
       this.stores[storeName].hydrate(state[storeName]);
     }
   }
-  this.alertChange();
+  this.alertChanges();
   this.dispatching = false;
 }
 
 State.prototype.dehydrate = function() {
   var ret = {};
   this.mapStores(function (store) {
-    ret[store.instance.storeName] = store.instance.dehydrate();
+    ret[store.storeName] = store.dehydrate();
   });
   return ret;
 }
 
+State.prototype.waitFor = function(stores) {
+  stores.map(function(store) {
+    if (!this.run[store.storeName]) {
+      this.run[storeName] = true;
+      store[store.handlers[payload.source]](this.runningPayload);
+    }
+  }.bind(this))
+}
+
 State.prototype.dispatch = function(payload) {
   this.dispatching = true;
+  this.run = {};
+  this.runningPayload = payload;
 
   this.mapStores(function (store) {
-    if (store.instance.handlers[payload.source]) {
-      store.instance[store.instance.handlers[payload.source]](payload);
+    if (store.handlers[payload.source] && !this.run[store.storeName]) {
+      store[store.handlers[payload.source]](payload);
     }
-  });
+  }.bind(this));
 
   this.dispatching = false;
+  this.runningPayload = null;
 
   this.alertChanges();
 }
@@ -93,8 +114,8 @@ State.prototype.dispatch = function(payload) {
 State.prototype.alertChanges = function() {
   this.listeners.map(function (listening) {
     var shouldRecieveChange = false;
-    listening.stores.map(function (store) {
-      shouldRecieveChange = !!(shouldRecieveChange || this.changedBuffer[store]);
+    listening.stores.map(function (storeName) {
+      shouldRecieveChange = !!(shouldRecieveChange || this.changedBuffer[storeName]);
     }.bind(this));
     if (shouldRecieveChange) {
       listening.callback.apply(listening.ctx);
@@ -104,4 +125,52 @@ State.prototype.alertChanges = function() {
   this.changedBuffer = {};
 }
 
-module.exports = State;
+State.prototype.clearListeners = function() {
+  this.listeners = [];
+}
+
+function inheritClass(parent, proto) {
+  function Surrogate() {
+    parent.apply(this, arguments);
+  }
+
+  util.inherits(Surrogate, parent);
+
+  util._extend(Surrogate.prototype, proto);
+
+  Surrogate.storeName = proto.storeName;
+
+  return Surrogate;
+}
+
+var BaseStore = function BaseStore(opts) {
+  this.state = {};
+  this.initialize && this.initialize(opts);
+  events.EventEmitter.apply(this, arguments);
+}
+
+util.inherits(BaseStore, events.EventEmitter);
+
+util._extend(BaseStore.prototype, {
+  storeName: "base",
+  emitChange: function() {
+    this.emit('change:emit');
+  },
+  dehydrate: function() {
+  },
+  hydrate: function() {
+  }
+});
+
+module.exports = {
+  createContext: function(stores, dehyrdatedState) {
+    var newState = new State();
+    stores.map(function (store) {
+      newState.register(store);
+    });
+    dehyrdatedState && newState.hydrate(dehyrdatedState);
+
+    return newState;
+  },
+  createStore: inheritClass.bind(this, BaseStore)
+};

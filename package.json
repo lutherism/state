@@ -2,13 +2,23 @@
   "name": "state",
   "version": "1.0.0",
   "description": "Tying the loop of flux. Using a two way dispatcher that batches store change events for performance and simplicity",
-  "main": "dist/state.js",
+  "main": "dist/client.js",
   "scripts": {
     "test": "npm test"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/lutherism/state.git"
+  },
+  "browserify": {
+    "transform": [
+      [
+        "reactify",
+        {
+          "es6": true
+        }
+      ]
+    ]
   },
   "keywords": [
     "flux",
@@ -21,5 +31,10 @@
   "bugs": {
     "url": "https://github.com/lutherism/state/issues"
   },
-  "homepage": "https://github.com/lutherism/state"
+  "homepage": "https://github.com/lutherism/state",
+  "dependencies": {
+    "express": "^4.12.2",
+    "react": "^0.13.0",
+    "reqwest": "^1.1.5"
+  }
 }
