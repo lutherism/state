@@ -5,8 +5,8 @@ Tying the loop of flux. Using a two way dispatcher that batches store change eve
 ## Batches change events by dispatch loops ##
 
 5 new messages should trigger 5 change events, no matter how many stores
-are concerned. IE in a message app, updating the unread state shouldn't be
-a seperate DOM update from adding the new message text
+are concerned. IE recieveing a new message in a message app, updating the unread count shouldn't be
+a seperate DOM update from adding the new message component
 
 ## Composes dehydrated states ##
 
