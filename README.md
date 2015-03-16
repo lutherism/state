@@ -19,7 +19,7 @@ Given a dehydrated state blob, Server-side rendering is as simple as
 ```js
 function buildMarkupFromState(deHydratedState) {
   var state = State.createContext([], deHydratedState);
-  return React.renderToString(React.createElement(MyApp, {state: state}));
+  return React.renderToString(React.createElement(MyAppComponent, {state: state}));
   state.end();
 }
 ```
