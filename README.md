@@ -36,6 +36,7 @@ Creating new stores with new business logic is also simple
 
 ```js
 var MyNewStore = State.createStore({
+  storeName: "MyNewStore",
   handlers: {  //map payload.source constants to internal method names
     'VIEW': "handleViewPayload"
   },
@@ -50,5 +51,13 @@ var MyNewStore = State.createStore({
   dehydrate: function() {
     return this.state;
   }
+}
+```
+
+Listening for state changes in components is also managed by the state object
+
+```js
+componentDidMount: function() {
+  this.props.state.listenToStores(["MyNewStore"], this.handleEmit);
 }
 ```
