@@ -36,7 +36,7 @@ Creating new stores with new business logic is also simple
 
 ```js
 var MyNewStore = State.createStore({
-  handlers: {
+  handlers: {  //map payload.source constants to internal method names
     'VIEW': "handleViewPayload"
   },
   handleViewPayload: function(payload) {
