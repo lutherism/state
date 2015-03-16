@@ -32,3 +32,23 @@ function getNewStateAfterAction(payload) {
   return state.dehydrate();
 }
 ```
+Creating new stores with new business logic is also simple
+
+```js
+var MyNewStore = State.createStore({
+  handlers: {
+    'VIEW': "handleViewPayload"
+  },
+  handleViewPayload: function(payload) {
+    if (payload.action.type === "demo") {
+      this.state[payload.action.data.id] = payload.action.data
+    }
+  },
+  hydrate: function(state) {
+    this.state = state;
+  },
+  dehydrate: function() {
+    return this.state;
+  }
+}
+```
