@@ -23,15 +23,6 @@ function buildMarkupFromState(deHydratedState) {
   state.end();
 }
 ```
-
-Mutating state based on an action is also bery simple, using the Flux Store paradigm.
-
-```js
-function getNewStateAfterAction(payload) {
-  state.dispatch(payload);
-  return state.dehydrate();
-}
-```
 Creating new stores with new business logic is also simple
 
 ```js
@@ -59,5 +50,20 @@ Listening for state changes in components is also managed by the state object
 ```js
 componentDidMount: function() {
   this.props.state.listenToStores(["MyNewStore"], this.handleEmit);
+}
+```
+
+Dispatching actions from components is just like Flux
+```js
+onUnfriendClick: function(e) {
+  this.props.state.dispatch({
+    source: 'VIEW',
+    action: {
+      type: "remove_friend",
+      data: {
+        id: this.props.friend.id
+      }
+    }
+  });
 }
 ```
