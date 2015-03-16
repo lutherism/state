@@ -11,3 +11,15 @@ a seperate DOM update from adding the new message component
 ## Composes dehydrated states ##
 
 Add `hydrate()` and `dehydrate()` methods to your stores, and state will compose JSON blobs which can be used to rehydrate your app back to a previous state. Very usefull for integration testing and server-side rendering.
+
+## Enviorment agnostic State ##
+The point of this architecture is to contain an App's entire state in a single smart javascript object which allows your app to behave the same wether it's being used by a client, running tests on a dev machine, or rending in the cloud.
+
+Given a dehydrated state blob, Server-side rendering is as simple as
+```js
+function buildMarkupFromState(deHydratedState) {
+  var state = State.createContext([], deHydratedState);
+  return React.renderToString(React.createElement(MyApp, {state: state}));
+  state.end();
+}
+```
