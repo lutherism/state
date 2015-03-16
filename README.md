@@ -23,3 +23,12 @@ function buildMarkupFromState(deHydratedState) {
   state.end();
 }
 ```
+
+Mutating state based on an action is also bery simple, using the Flux Store paradigm.
+
+```js
+function getNewStateAfterAction(payload) {
+  state.dispatch(payload);
+  return state.dehydrate();
+}
+```
