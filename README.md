@@ -18,9 +18,10 @@ The point of this architecture is to contain an App's entire state in a single s
 Given a dehydrated state blob, Server-side rendering is as simple as
 ```js
 function buildMarkupFromState(deHydratedState) {
-  var state = State.createContext(<list of Store modules>, deHydratedState);
-  return React.renderToString(React.createElement(MyAppComponent, {state: state}));
+  var state = State.createContext(<list of Store modules>, deHydratedState),
+    markup React.renderToString(React.createElement(MyAppComponent, {state: state}));
   state.end();
+  return markup;
 }
 ```
 Creating new stores with new business logic is also simple
